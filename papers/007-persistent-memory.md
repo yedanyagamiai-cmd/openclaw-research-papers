@@ -108,9 +108,21 @@ The OWASP Agentic AI Top 10 (ASI04) identifies memory poisoning as a critical th
 
 Each agent's memory implementation was initially independent — rensin used facts.json, yedan used in-memory objects, the coordinator used /tmp/state.json. This fragmentation meant that knowledge learned by one agent was invisible to others. Centralizing through a unified memory API (fleet-gateway) resolved this but introduced a single point of failure.
 
-## 6. Conclusion
+## 6. Limitations
 
-Persistent memory for distributed agent fleets requires a layered architecture that balances latency (local cache), consistency (centralized store), and intelligence (semantic search). Our 3-layer design achieves 93% token savings while maintaining sub-second retrieval. The critical insight is that agent memory must be treated as infrastructure — with TTLs, access controls, and temporal metadata — not as a simple key-value store.
+This work has several important limitations:
+
+1. **Benchmark numbers are not our own.** The 91-93% token savings figures cited in Section 4.1 are from Mem0's published benchmarks (arXiv:2601.07978), not measurements on our system. Our architecture is inspired by Mem0's approach but has not been independently benchmarked on LongMemEval, LoCoMo, or any standard evaluation framework.
+
+2. **Entity quality is unaudited.** The 3,700+ KG entities have not undergone deduplication or quality assessment. Research (DEG-RAG, arXiv:2510.14271) shows LLM-generated KGs suffer from 20-50% redundancy due to casing variants and abbreviation expansion.
+
+3. **The 35-minute degradation cliff** cited from VentureBeat is an industry observation, not a measurement from our system. Our actual degradation curve has not been characterized.
+
+4. **Cross-agent memory consistency** follows an eventual consistency model with a 5-minute sync window, during which stale reads may occur (measured at 12% in our 3-agent test). Stronger consistency guarantees would require a consensus protocol.
+
+## 7. Conclusion
+
+Persistent memory for distributed agent fleets requires a layered architecture that balances latency (local cache), consistency (centralized store), and intelligence (semantic search). Our 3-layer design is architecturally sound and draws from state-of-the-art approaches (Mem0, Zep/Graphiti). Independent benchmarking on standard evaluation frameworks is needed to validate the performance claims. The critical insight is that agent memory must be treated as infrastructure — with TTLs, access controls, and temporal metadata — not as a simple key-value store.
 
 ## References
 
